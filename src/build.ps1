@@ -1,0 +1,1 @@
+docker build -t flanagan89/custom-vision-autotrainer .

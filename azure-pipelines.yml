@@ -1,0 +1,47 @@
+pool:
+  vmImage: ubuntu-16.04
+
+variables:
+  - group: autotrainer_build_vars # name of variable group in Azure Pipeline
+
+trigger:
+  batch: true
+  branches:
+    include:
+    - master
+  paths:
+    include:
+    - src/*
+    - azure-pipelines.yml
+
+steps:
+
+- task: UsePythonVersion@0
+  displayName: 'Use Python 3.6.x'
+  inputs:
+    versionSpec: '3.6.x'
+    addToPath: true
+    architecture: 'x64' # only applies to windows agents
+
+- script: pip install -r requirements.txt
+  workingDirectory: src/autotrainer
+  displayName: 'Install runtime dependencies'
+
+- script: pip install -r requirements-dev.txt
+  workingDirectory: src/autotrainer
+  displayName: 'Install dev dependencies'
+
+- script: docker-compose up -d
+  workingDirectory: src/
+  displayName: 'docker-compose: Start dependencies'
+
+- script: nosetests
+  workingDirectory: src/autotrainer
+  displayName: 'Run nosetests'
+  env:
+    CV_TRAINING_KEY: $(CV_TRAINING_KEY)
+    CV_ENDPOINT: $(CV_ENDPOINT)
+    STORAGE_ACCOUNT_CONNECTION_STRING: $(STORAGE_ACCOUNT_CONNECTION_STRING)
+
+
+

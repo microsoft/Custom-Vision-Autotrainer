@@ -1,0 +1,5 @@
+autotrainer/autotrainer_tests.py
+autotrainer/balancer_tests.py
+autotrainer/blob_tests.py
+autotrainer/custom_vision_tests.py
+autotrainer/requirements-dev.txt
