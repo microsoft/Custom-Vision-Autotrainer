@@ -64,6 +64,7 @@ class BlobClient:
         filename=os.path.basename(file_path)
         blob_name = join_parent_and_file_name(parent, filename)
         labels_full_name = join_parent_and_file_name_labels(parent, filename)
+        self.blob_service.create_container(container_name)
         self.blob_service.create_blob_from_path(container_name, blob_name, file_path )
         text=''
         for label in labels:
