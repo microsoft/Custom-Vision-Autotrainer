@@ -121,7 +121,7 @@ class AutotrainerCli:
             description='Select data from blobs and add to Custom Vision',
             usage='autotrainer select <options>')
         parser.add_argument('-c','--container', type=Container, choices=list(Container), default=Container.train)
-        parser.add_argument('--num', type=int, help='Number to add', required=True)
+        parser.add_argument('--num', type=int, help='Number to add', required=False)
         parser.add_argument('--project', help='Id of the custom vision project', required=True)
         args = parser.parse_args(sys.argv[2:])
 
