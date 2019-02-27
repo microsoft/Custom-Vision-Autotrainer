@@ -54,6 +54,7 @@ class AutotrainerCli:
         parser.add_argument('--iteration', help='(optional) iteration to store')
         parser.add_argument('--platform', help='Platform to export to', type=Platform, choices=list(Platform), default=Platform.DOCKER)
         parser.add_argument('--flavour', help='Platform dependent Flavour', type=Flavour, choices=list(Flavour), default=Flavour.Linux)
+        parser.add_argument('--listprojects', help='list custom vision project IDs', action='store_true')
         args = parser.parse_args(sys.argv[2:])
         if(args.newproject):
             print('Creating new project: ' + args.newproject)
@@ -75,6 +76,12 @@ class AutotrainerCli:
                 exit(1)
             export = self.autotrainer.custom_vision.export_project(args.platform, args.flavour, project, iteration)
             print(export.download_uri)
+        elif args.listprojects:
+            ids = self.autotrainer.custom_vision.list_project_ids()
+            print("{:25s}{:}".format("Project Name", "Project ID"))
+            print("-------------------------------------------------------------")
+            for i in ids:
+                print("{:25s}{:}".format(i.name, i.id))
         else:
             print('Incorrect syntax')
 
