@@ -66,6 +66,9 @@ class CustomVisionClient:
             exporter = Exporter(self.training_client)
             return exporter.export(platform, flavour, project, iteration )
 
+    def list_project_ids(self) -> [Project]:
+        return self.training_client.get_projects()
+
 # factory method
 def create_cv_client(endpoint: str, key: str)-> CustomVisionClient:
     trainer = CustomVisionTrainingClient(key, endpoint)
