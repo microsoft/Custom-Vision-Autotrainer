@@ -110,7 +110,7 @@ class AutotrainerCli:
             parser.add_argument('-c','--container', type=Container, choices=list(Container), default=Container.train)
             parser.add_argument('--extension', help='Filter on file extension', default='')
             parser.add_argument('--parent', help='Parent directory in Blob Storage', default=None)
-            args = parser.parse_args(sys.argv[2:])
+            args = parser.parse_args(sys.argv[3:])
             image_paths = self.autotrainer.get_file_paths(args.directory, args.extension)
             labelled_blobs = self.autotrainer.upload_multiple_images(args.container, image_paths, args.labels, args.parent )
             print('Created {} labelled blobs'.format(len(labelled_blobs)))
