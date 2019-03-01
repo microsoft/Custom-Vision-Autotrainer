@@ -26,10 +26,11 @@ class Autotrainer:
         for path in image_paths:
             labelled_blobs.append(self.blob.add_data_from_path(container.value, path, labels, parent ))
 
-        for meta in labelled_blobs:
-            self.table.insert_record(meta)
-
         return labelled_blobs
+
+    def create_record_of_images(self, cvResults: [ImageCreateResult], container: Container):
+        for i in cvResults:
+            self.table.insert_record(i, container.value)
 
     def add_all_images_to_cv(self, container: Container, projectId: str, num_results: int = None)->[ImageCreateResult]:
         labelled_blobs = self.blob.list_all_labelled_blobs(container.value, num_results)
@@ -37,4 +38,3 @@ class Autotrainer:
         images = self.custom_vision.create_image_url_list(project, labelled_blobs)
         images = self.custom_vision.balance_images(images)
         return self.custom_vision.add_images_to_project(project, images )
-        # todo - save ids back to the blob storage
