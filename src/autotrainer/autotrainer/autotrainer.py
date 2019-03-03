@@ -22,11 +22,11 @@ class Autotrainer:
     def list_all_labelled_blobs(self, container: Container, num_results: int = None):
         return self.blob.list_all_labelled_blobs(container.value, num_results)
 
-    def upload_multiple_images(self, container: Container, image_paths: [str], labels: [str], parent: str = None)-> [LabelledBlob]:
-        labelled_blobs = []
-        for path in image_paths:
-            labelled_blobs.append(self.blob.add_data_from_path(container.value, path, labels, parent ))
-        return labelled_blobs
+    def upload_multiple_files(self, container: Container, file_paths: [str], labels: [str] = None, parent: str = None)-> [LabelledBlob]:
+        blobs = []
+        for path in file_paths:
+            blobs.append(self.blob.add_data_from_path(container.value, path, labels, parent ))
+        return blobs
 
     def add_all_images_to_cv(self, container: Container, projectId: str, num_results: int = None)->[ImageCreateResult]:
         labelled_blobs = self.blob.list_all_labelled_blobs(container.value, num_results)

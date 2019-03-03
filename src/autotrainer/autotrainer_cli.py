@@ -119,7 +119,8 @@ class AutotrainerCli:
             parser.add_argument('--parent', help='Parent directory in Blob Storage', default=None)
             args = parser.parse_args(sys.argv[3:])
             image_paths = self.autotrainer.get_file_paths(args.directory, args.extension)
-            labelled_blobs = self.autotrainer.upload_multiple_images(args.container, image_paths, args.labels, args.parent )
+
+            labelled_blobs = self.autotrainer.upload_multiple_files(args.container, image_paths, labels, args.parent )
             print('Created {} labelled blobs'.format(len(labelled_blobs)))
         
     def select(self):
