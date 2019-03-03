@@ -66,11 +66,13 @@ class BlobClient:
         labels_full_name = join_parent_and_file_name_labels(parent, filename)
         self.blob_service.create_container(container_name)
         self.blob_service.create_blob_from_path(container_name, blob_name, file_path )
-        text=''
-        for label in labels:
-            text+=label + '\n'
-        
-        self.blob_service.create_blob_from_text(container_name, labels_full_name, text.strip())
+
+        if labels is not None:
+            text = ''
+            for label in labels:
+                text += label + '\n'
+            self.blob_service.create_blob_from_text(container_name, labels_full_name, text.strip())
+
         return self.get_labelled_blob(container_name, blob_name)
 
     def list_blob_names(self, container_name: str, parent: str = None) -> [str]:
