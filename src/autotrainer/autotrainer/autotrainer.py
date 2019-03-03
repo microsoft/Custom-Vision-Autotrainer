@@ -3,7 +3,7 @@ from autotrainer.custom_vision.custom_vision_client import CustomVisionClient, c
 from autotrainer.blob.blob_client import BlobClient, create_blob_client_from_connection_string
 from autotrainer.blob.models.container import Container
 from autotrainer.blob.models.labelled_blob import LabelledBlob
-from autotrainer.local.file_loader import list_paths
+from autotrainer.local.file_loader import list_paths, list_yolo_annotation_paths
 
 class Autotrainer:
 
@@ -15,6 +15,9 @@ class Autotrainer:
 
     def get_file_paths(self, directory_path: str, ext: str = '')->[str]:
         return list_paths(directory_path, ext)
+
+    def get_yolo_annotation_paths(self, directory_path: str, image_path: [str]) -> [str]:
+        return list_yolo_annotation_paths(directory_path, image_path)
 
     def list_all_labelled_blobs(self, container: Container, num_results: int = None):
         return self.blob.list_all_labelled_blobs(container.value, num_results)
