@@ -5,6 +5,7 @@ import time
 from collections import Counter
 
 from autotrainer.autotrainer import Autotrainer
+from autotrainer.models.dataset_type import DatasetType
 from autotrainer.custom_vision.domain import Domain
 from autotrainer.custom_vision.classification_type import ClassificationType
 from autotrainer.custom_vision.platform import Platform, Flavour
@@ -109,20 +110,58 @@ class AutotrainerCli:
             print_describe_label_frequency(holdout_blobs)
 
         elif args.command == 'upload':
+
             parser = argparse.ArgumentParser(
                 description='Upload to the data catalogue (blob storage)',
                 usage='autotrainer catalogue upload <options>')
-            parser.add_argument('-d', '--directory', help='The local directory containing the images', required=True)
-            parser.add_argument('-l', '--labels', action='append', help='Label for the image', required=True) # can set multiple
-            parser.add_argument('-c','--container', type=Container, choices=list(Container), default=Container.train)
-            parser.add_argument('--extension', help='Filter on file extension', default='')
-            parser.add_argument('--parent', help='Parent directory in Blob Storage', default=None)
-            args = parser.parse_args(sys.argv[3:])
-            image_paths = self.autotrainer.get_file_paths(args.directory, args.extension)
+            parser.add_argument('datatype', help='Dataset options', type=DatasetType, choices=list(DatasetType))
+            args = parser.parse_args(sys.argv[3:4])
 
+            labels = None
+
+            if args.datatype == DatasetType.yolo:
+                parser = argparse.ArgumentParser(
+                    description='Upload yolo dataset with annotations (blob storage)',
+                    usage='autotrainer catalogue upload yolo <options>')
+                parser.add_argument('-s', '--set', help='Path to txt file with list of training/validation set', required=True)
+                parser.add_argument('-a', '--annotations', help='Path to annotation files as .txt', required=True)
+                parser.add_argument('-c', '--container', type=Container, choices=list(Container), required=True)
+                parser.add_argument('--parent', help='Parent directory in Blob Storage', default=None)
+                parser.add_argument('--extension', help='Filter on file extension', default='')
+                args = parser.parse_args(sys.argv[4:])
+
+                with open(args.set) as f:
+                    image_paths = f.read().split("\n")
+                    if image_paths[-1] == "":
+                        image_paths = image_paths[:-1]
+
+                annotations = self.autotrainer.get_yolo_annotation_paths(args.annotations, image_paths)
+                print("Uploading %s annotation files" % len(annotations))
+                res = self.autotrainer.upload_multiple_files(args.container, annotations, None, args.parent)
+                print('Created {} labelled blobs'.format(len(res)))
+
+            elif args.datatype == DatasetType.generic:
+                parser = argparse.ArgumentParser(
+                    description='Upload generic dataset with labels (blob storage)',
+                    usage='autotrainer catalogue upload generic <options>')
+                parser.add_argument('-d', '--directory', help='The local directory containing the images', required=True)
+                parser.add_argument('-l', '--labels', action='append', help='Label for the image', required=True)  # can set multiple
+                parser.add_argument('-c', '--container', type=Container, choices=list(Container), default=Container.train)
+                parser.add_argument('--parent', help='Parent directory in Blob Storage', default=None)
+                parser.add_argument('--extension', help='Filter on file extension', default='')
+                args = parser.parse_args(sys.argv[4:])
+
+                labels = args.labels
+                image_paths = self.autotrainer.get_file_paths(args.directory, args.extension)
+
+            else:
+                print("Inncorrect syntax")
+                return
+
+            print("Uploading %s images" % len(image_paths))
             labelled_blobs = self.autotrainer.upload_multiple_files(args.container, image_paths, labels, args.parent )
             print('Created {} labelled blobs'.format(len(labelled_blobs)))
-        
+
     def select(self):
         # define the CLI args
         parser = argparse.ArgumentParser(
