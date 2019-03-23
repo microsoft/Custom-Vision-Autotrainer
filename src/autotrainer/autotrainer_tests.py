@@ -62,4 +62,5 @@ class AutotrainerTests(unittest.TestCase):
             project.id))
 
     def test_add_record(self):
+        self.autotrainer.table.initialise_table(table_name="testAutoTrainer")
         self.autotrainer.create_record_of_images(self.images, test_container)
