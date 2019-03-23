@@ -24,8 +24,7 @@ class TableClient:
     def insert_record(self, item: ImageCreateResult, container_name: str):
         if item.image is not None:
             url = urlparse(item.source_url)
-            keys = url.path.split("/")
-            record = {'PartitionKey': container_name, 'RowKey': item.image.id, 'url': keys[0] + keys[1]}
+            record = {'PartitionKey': container_name, 'RowKey': item.image.id, 'url': url.netloc + url.path}
             self.table_service.insert_or_replace_entity(self.table_name, record)
         else:
             print("Skipping none image file.")
