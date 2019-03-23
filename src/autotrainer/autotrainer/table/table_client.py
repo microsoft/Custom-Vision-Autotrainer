@@ -1,5 +1,6 @@
 from azure.cosmosdb.table.tableservice import TableService
 from azure.cognitiveservices.vision.customvision.training.models import ImageCreateResult
+from azure.cosmosdb.table.models import Entity
 from urllib.parse import urlparse
 
 
@@ -21,10 +22,13 @@ class TableClient:
             self.table_service.create_table(self.table_name)
 
     def insert_record(self, item: ImageCreateResult, container_name: str):
-        url = urlparse(item.source_url)
-        keys = url.path.split("/")
-        record = {'PartitionKey': container_name, 'RowKey': item.image.id, 'url': keys[0] + keys[1]}
-        self.table_service.insert_or_replace_entity(self.table_name, record)
+        if item.image is not None:
+            url = urlparse(item.source_url)
+            keys = url.path.split("/")
+            record = {'PartitionKey': container_name, 'RowKey': item.image.id, 'url': keys[0] + keys[1]}
+            self.table_service.insert_or_replace_entity(self.table_name, record)
+        else:
+            print("Skipping none image file.")
 
 
 def create_table_client(account_name: str, key: str) -> TableClient:
