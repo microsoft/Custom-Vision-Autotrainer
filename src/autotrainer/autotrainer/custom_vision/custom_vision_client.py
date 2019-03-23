@@ -69,6 +69,7 @@ class CustomVisionClient:
     def list_project_ids(self) -> [Project]:
         return self.training_client.get_projects()
 
+
 # factory method
 def create_cv_client(endpoint: str, key: str)-> CustomVisionClient:
     trainer = CustomVisionTrainingClient(key, endpoint)

@@ -6,10 +6,13 @@ from autotrainer.blob.models.container import Container
 from autotrainer.blob.models.labelled_blob import LabelledBlob
 from autotrainer.local.file_loader import list_paths
 
+
 class Autotrainer:
 
     custom_vision: CustomVisionClient
     blob: BlobClient
+    table: TableClient
+
     def __init__(self, cv_key: str, cv_endpoint: str, storage_connection_string:str):
         self.custom_vision = create_cv_client(cv_endpoint, cv_key)
         self.blob = create_blob_client_from_connection_string(storage_connection_string)
