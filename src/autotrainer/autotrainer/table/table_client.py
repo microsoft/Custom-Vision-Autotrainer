@@ -29,6 +29,9 @@ class TableClient:
         else:
             print("Skipping none image file.")
 
+    def get_record(self, container_name: str, image_id: str) -> Entity:
+        return self.table_service.get_entity(self.table_name, container_name, image_id)
+
 
 def create_table_client(account_name: str, key: str) -> TableClient:
     tablesvc = TableService(account_name, key)
