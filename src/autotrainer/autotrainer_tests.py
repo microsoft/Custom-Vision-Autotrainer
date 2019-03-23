@@ -64,3 +64,10 @@ class AutotrainerTests(unittest.TestCase):
     def test_add_record(self):
         self.autotrainer.table.initialise_table(table_name="testAutoTrainer")
         self.autotrainer.create_record_of_images(self.images, test_container)
+
+        record = self.autotrainer.table.get_record(
+            test_container,
+            self.images[0].image.id)
+
+        self.assertEqual(record.RowKey, self.images[0].image.id)
+        self.assertEqual(record.PartitionKey, test_container)
