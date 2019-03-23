@@ -5,7 +5,7 @@ from urllib.parse import urlparse
 
 # main table client class
 class TableClient:
-    blob_service: TableService
+    table_service: TableService
 
     def __init__(self, table_service: TableService):
         """
