@@ -14,10 +14,10 @@ class TableClient:
         :type: azure.cosmosdb.table.TableService
         """
         self.table_service = table_service
-        self.table_name = "assets"
         self.initialise_table()
 
-    def initialise_table(self):
+    def initialise_table(self, table_name="assets"):
+        self.table_name = table_name
         if self.table_service.exists(self.table_name) is False:
             self.table_service.create_table(self.table_name)
 
