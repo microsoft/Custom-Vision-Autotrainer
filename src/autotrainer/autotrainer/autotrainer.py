@@ -33,7 +33,7 @@ class Autotrainer:
 
     def create_record_of_images(self, cvResults: [ImageCreateResult], container: Container):
         for i in cvResults:
-            self.table.insert_record(i, container.value)
+            self.table.insert_record(i, container)
 
     def add_all_images_to_cv(self, container: Container, projectId: str, num_results: int = None)->[ImageCreateResult]:
         labelled_blobs = self.blob.list_all_labelled_blobs(container.value, num_results)
