@@ -1,5 +1,6 @@
 from azure.cosmosdb.table.tableservice import TableService
-from azure.cognitiveservices.vision.customvision.training.models import ImageCreateResult
+from azure.cognitiveservices.vision.customvision.training.models import (
+    ImageCreateResult)
 from azure.cosmosdb.table.models import Entity
 from urllib.parse import urlparse
 
@@ -24,16 +25,26 @@ class TableClient:
     def insert_record(self, item: ImageCreateResult, container_name: str):
         if item.image is not None:
             url = urlparse(item.source_url)
-            record = {'PartitionKey': container_name, 'RowKey': item.image.id, 'url': url.netloc + url.path}
-            self.table_service.insert_or_replace_entity(self.table_name, record)
+            fileName = url.path.split("/")[-1]
+
+            record = {
+                'PartitionKey': container_name,
+                'RowKey': fileName,
+                'Url': url.netloc + url.path,
+                'Id': item.image.id}
+
+            self.table_service.insert_or_replace_entity(
+                self.table_name, record)
         else:
             print("Skipping none image file.")
 
     def get_record(self, container_name: str, image_id: str) -> Entity:
-        return self.table_service.get_entity(self.table_name, container_name, image_id)
+        return self.table_service.get_entity(
+            self.table_name, container_name, image_id)
 
     def delete_record(self, container_name: str, image_id: str):
-        self.table_service.delete_entity(self.table_name, container_name, image_id)
+        self.table_service.delete_entity(
+            self.table_name, container_name, image_id)
 
     def delete_table(self):
         self.table_service.delete_table(self.table_name)
