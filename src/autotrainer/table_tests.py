@@ -46,10 +46,11 @@ class TableTests(unittest.TestCase):
 
     def test_delete_record(self):
         test = self.test_record
+        fileName = urlparse(test.source_url).path.split("/")[-1]
         self.table.insert_record(test, test_container)
-        self.table.delete_record(test_container, test.image.id)
+        self.table.delete_record(test_container, fileName)
         try:
-            record = self.table.get_record(test_container, test.image.id)
+            record = self.table.get_record(test_container, fileName)
         except Exception as e:
             self.assertIsNotNone(e)
             return

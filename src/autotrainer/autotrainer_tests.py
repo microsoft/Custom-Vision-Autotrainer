@@ -1,6 +1,7 @@
 import os
 import unittest
 import uuid
+from urllib.parse import urlparse
 from azure.cognitiveservices.vision.customvision.training.models import Project
 from azure.cognitiveservices.vision.customvision.training.models import (
     ImageCreateResult,
@@ -75,11 +76,13 @@ class AutotrainerTests(unittest.TestCase):
         self.autotrainer.table.initialise_table(table_name="testAutoTrainer")
         self.autotrainer.create_record_of_images(test_list, test_container)
 
+        fileName = urlparse(test.source_url).path.split("/")[-1]
+
         record = self.autotrainer.table.get_record(
             test_container,
-            test.image.id)
+            fileName)
 
-        self.assertEqual(record.RowKey, test.image.id)
+        self.assertEqual(record.RowKey, fileName)
         self.assertEqual(record.PartitionKey, test_container)
 
         self.autotrainer.table.delete_table()
