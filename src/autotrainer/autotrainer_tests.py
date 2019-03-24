@@ -1,8 +1,10 @@
 import os
 import unittest
+import uuid
 from azure.cognitiveservices.vision.customvision.training.models import Project
 from azure.cognitiveservices.vision.customvision.training.models import (
-    ImageCreateResult)
+    ImageCreateResult,
+    Image)
 from autotrainer.blob.models.container import Container
 from autotrainer.autotrainer import Autotrainer
 from autotrainer.custom_vision.domain import Domain
@@ -20,13 +22,11 @@ test_container = "test_container"
 class AutotrainerTests(unittest.TestCase):
     autotrainer: Autotrainer
     projects: [Project]
-    images: [ImageCreateResult]
 
     def setUp(self):
         self.autotrainer = Autotrainer(CVTK, cv_endpoint, conn_string)
         self.autotrainer.blob.initialise_containers()
         self.projects = []
-        self.images = []
 
     def tearDown(self):
         for project in self.projects:
@@ -34,14 +34,14 @@ class AutotrainerTests(unittest.TestCase):
             self.autotrainer.custom_vision.training_client.delete_project(
                 project.id)
             self.projects.remove(project)
-        self.autotrainer.table.delete_table()
 
     def test_upload_files(self):
         image_paths = self.autotrainer.get_file_paths(dog_dir, 'jpg')
-        self.images.append(self.autotrainer.upload_multiple_images(
+
+        self.autotrainer.upload_multiple_images(
             Container.test,
             image_paths,
-            ['dog']))
+            ['dog'])
 
     def test_add_images_to_project(self):
         project = self.autotrainer.custom_vision.create_project(
@@ -52,22 +52,34 @@ class AutotrainerTests(unittest.TestCase):
 
         self.projects.append(project)  # save to delete later
         image_paths = self.autotrainer.get_file_paths(cat_dir, 'jpg')
+
         self.autotrainer.upload_multiple_images(
             Container.test,
             image_paths,
             ['cat'])
 
-        self.images.append(self.autotrainer.add_all_images_to_cv(
-            Container.test,
-            project.id))
+        self.autotrainer.add_all_images_to_cv(Container.test, project.id)
 
     def test_add_record(self):
+        test_list = []
+        test = ImageCreateResult()
+        test_image = Image()
+        test_image.id = str(uuid.uuid4())
+        test.image = test_image
+        test.source_url = "https://test.com/1.jpg"
+        test_list.append(test)
+
+        test.image.id = str(uuid.uuid4())
+        test_list.append(test)
+
         self.autotrainer.table.initialise_table(table_name="testAutoTrainer")
-        self.autotrainer.create_record_of_images(self.images, test_container)
+        self.autotrainer.create_record_of_images(test_list, test_container)
 
         record = self.autotrainer.table.get_record(
             test_container,
-            self.images[0].image.id)
+            test.image.id)
 
-        self.assertEqual(record.RowKey, self.images[0].image.id)
+        self.assertEqual(record.RowKey, test.image.id)
         self.assertEqual(record.PartitionKey, test_container)
+
+        self.autotrainer.table.delete_table()
