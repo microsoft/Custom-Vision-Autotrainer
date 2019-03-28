@@ -134,6 +134,8 @@ class AutotrainerCli:
 
         res = self.autotrainer.add_all_images_to_cv(args.container, args.project, args.num )
 
+        self.autotrainer.create_record_of_images(res, args.container.value)
+
         res_freq = Counter([i.status for i in res])
         print('{} image create results'.format(len(res)))
         print('label summary:')

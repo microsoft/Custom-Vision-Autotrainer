@@ -1,7 +1,6 @@
 
 import os
 import unittest
-from azure.cognitiveservices.vision.customvision.training.models import ImageUrlCreateEntry
 
 from autotrainer.custom_vision.custom_vision_client import CustomVisionClient
 from autotrainer.custom_vision.domain import Domain
